@@ -223,7 +223,7 @@ def create_prediction_chart(company_df, train_idx, test_idx, y_train, y_test,
     return fig
 
 def main():
-    st.set_page_config(layout="wide", page_title="Enhanced Stock Predictor Pro")
+    st.set_page_config(layout="wide", page_title="WallStreetBot")
     
     # Custom CSS
     st.markdown("""
