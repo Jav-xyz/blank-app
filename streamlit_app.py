@@ -150,12 +150,24 @@ selected_date = st.sidebar.date_input(
     max_value=max_date - relativedelta(months=3)
 )
 
+localeRows = {
+    "Reel GDP per capitas": "GDP_per_capitas",
+    "Federals Funds": "Federal_Funds",
+    "Unemployment Rates": "Unemployment_Rates",
+    "Inflation Rates": "Inflation_rate",
+    # "Total Profit": "total_profit",
+    # "Total Spending": "total_spending",
+    # "Total Revenue": "total_revenue",
+    ## you can uncoment the following line but the data is weird
+}
+extern_data = st.sidebar.multiselect('External Data to show', localeRows.keys())
+
+
 # Convert to datetime
 selected_date = pd.to_datetime(selected_date)
 
 # Train model
 model, X_train, X_test, y_train, y_test, train_pred, test_pred, train_r2, test_r2 = train_model(company_data)
-
 # Make predictions
 if st.sidebar.button('Predict'):
     # Get the index of the selected date
@@ -228,11 +240,16 @@ st.write(f"Test R-squared: {test_r2:.4f}")
 fig2, ax2 = plt.subplots(figsize=(10, 6))
 train_dates = company_data.loc[X_train.index, 'Date']
 test_dates = company_data.loc[X_test.index, 'Date']
+all_dates = pd.concat([train_dates, test_dates], axis=0)
 
 ax2.plot(train_dates, y_train, label='Actual (Train)', color='blue')
 ax2.plot(train_dates, train_pred, label='Predicted (Train)', color='orange', linestyle='--')
 ax2.plot(test_dates, y_test, label='Actual (Test)', color='green')
 ax2.plot(test_dates, test_pred, label='Predicted (Test)', color='red', linestyle='--')
+for row in extern_data:
+    data = company_data[localeRows[row]]
+    ax2.plot(all_dates, data, label=row)
+
 ax2.set_title(f'{selected_company} Model Performance')
 ax2.set_xlabel('Date')
 ax2.set_ylabel('Close Price')
