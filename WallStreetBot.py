@@ -53,9 +53,8 @@ def prepare_features(df, company, selected_features):
         'Profit_Margin_lag_1', 'Profit_Margin_lag_2',
         'Year', 'Month', 'Quarter'
     ]
-    
     # Use selected features if provided, otherwise use all
-    features_to_use = selected_features if selected_features else all_features
+    features_to_use = selected_features or all_features
     
     X = company_df[features_to_use]
     y = company_df['Close']
@@ -379,7 +378,7 @@ def main():
     future_dates = pd.date_range(
         start=company_df['Date'].max() + timedelta(days=1),
         end=datetime(2025, 12, 31),
-        freq='M'
+        freq='ME'
     )
     
     future_predictions = []

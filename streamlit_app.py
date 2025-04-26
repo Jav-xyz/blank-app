@@ -143,12 +143,12 @@ min_date = company_data['Date'].min().to_pydatetime()
 max_date = company_data['Date'].max().to_pydatetime()
 default_date = max_date - relativedelta(years=1)
 
-selected_date = st.sidebar.date_input(
-    'Select prediction start date',
-    value=default_date,
-    min_value=min_date,
-    max_value=max_date - relativedelta(months=3)
-)
+# selected_date = st.sidebar.date_input(
+#     'Select prediction start date',
+#     value=default_date,
+#     min_value=min_date,
+#     max_value=max_date - relativedelta(months=3)
+# )
 
 localeRows = {
     "Reel GDP per capitas": "GDP_per_capitas",
@@ -164,7 +164,7 @@ extern_data = st.sidebar.multiselect('External Data to show', localeRows.keys())
 
 
 # Convert to datetime
-selected_date = pd.to_datetime(selected_date)
+# selected_date = pd.to_datetime(selected_date)
 
 # Train model
 model, X_train, X_test, y_train, y_test, train_pred, test_pred, train_r2, test_r2 = train_model(company_data)
