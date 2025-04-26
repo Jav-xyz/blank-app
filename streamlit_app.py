@@ -169,67 +169,67 @@ selected_date = pd.to_datetime(selected_date)
 # Train model
 model, X_train, X_test, y_train, y_test, train_pred, test_pred, train_r2, test_r2 = train_model(company_data)
 # Make predictions
-if st.sidebar.button('Predict'):
-    # Get the index of the selected date
-    try:
-        idx = company_data[company_data['Date'] == selected_date].index[0]
-    except IndexError:
-        st.error("Selected date not found in the dataset. Please choose a different date.")
-        st.stop()
-    
-    actual_data = company_data.iloc[:idx+1].copy()
-    
-    # Predict future values
-    prediction_dates, predictions = predict_future(model, actual_data, selected_date, periods=4)
-    
-    # Get actual values for comparison
-    actual_future = company_data[company_data['Date'].isin(prediction_dates)]
-    
-    # Create DataFrame for results
-    results = pd.DataFrame({
-        'Date': prediction_dates,
-        'Predicted Close': predictions
-    })
-    
-    if not actual_future.empty:
-        results = results.merge(actual_future[['Date', 'Close']], on='Date', how='left')
-        results.rename(columns={'Close': 'Actual Close'}, inplace=True)
-        
-        # Calculate R-squared for predictions
-        if len(results) > 1:
-            pred_r2 = r2_score(results['Actual Close'], results['Predicted Close'])
-            st.subheader('Prediction Results')
-            st.write(f"R-squared for predictions: {pred_r2:.4f}")
-        
-        # Display results table
-        st.dataframe(results.style.format({
-            'Date': lambda x: x.strftime('%Y-%m-%d'),
-            'Predicted Close': '{:.2f}',
-            'Actual Close': '{:.2f}'
-        }))
-        
-        # Plot results
-        fig, ax = plt.subplots(figsize=(10, 6))
-        ax.plot(company_data['Date'], company_data['Close'], label='Historical Close', color='blue')
-        ax.plot(results['Date'], results['Predicted Close'], 'ro-', label='Predicted Close')
-        
-        if 'Actual Close' in results.columns:
-            ax.plot(results['Date'], results['Actual Close'], 'go-', label='Actual Close')
-        
-        ax.axvline(x=selected_date, color='gray', linestyle='--', label='Prediction Start')
-        ax.set_title(f'{selected_company} Stock Price Prediction')
-        ax.set_xlabel('Date')
-        ax.set_ylabel('Close Price')
-        ax.legend()
-        ax.grid(True)
-        
-        st.pyplot(fig)
-    else:
-        st.warning("No actual data available for the predicted period.")
-        st.dataframe(results.style.format({
-            'Date': lambda x: x.strftime('%Y-%m-%d'),
-            'Predicted Close': '{:.2f}'
-        }))
+# if st.sidebar.button('Predict'):
+#     # Get the index of the selected date
+#     try:
+#         idx = company_data[company_data['Date'] == selected_date].index[0]
+#     except IndexError:
+#         st.error("Selected date not found in the dataset. Please choose a different date.")
+#         st.stop()
+#     
+#     actual_data = company_data.iloc[:idx+1].copy()
+#     
+#     # Predict future values
+#     prediction_dates, predictions = predict_future(model, actual_data, selected_date, periods=4)
+#     
+#     # Get actual values for comparison
+#     actual_future = company_data[company_data['Date'].isin(prediction_dates)]
+#     
+#     # Create DataFrame for results
+#     results = pd.DataFrame({
+#         'Date': prediction_dates,
+#         'Predicted Close': predictions
+#     })
+#     
+#     if not actual_future.empty:
+#         results = results.merge(actual_future[['Date', 'Close']], on='Date', how='left')
+#         results.rename(columns={'Close': 'Actual Close'}, inplace=True)
+#         
+#         # Calculate R-squared for predictions
+#         if len(results) > 1:
+#             pred_r2 = r2_score(results['Actual Close'], results['Predicted Close'])
+#             st.subheader('Prediction Results')
+#             st.write(f"R-squared for predictions: {pred_r2:.4f}")
+#         
+#         # Display results table
+#         st.dataframe(results.style.format({
+#             'Date': lambda x: x.strftime('%Y-%m-%d'),
+#             'Predicted Close': '{:.2f}',
+#             'Actual Close': '{:.2f}'
+#         }))
+#         
+#         # Plot results
+#         fig, ax = plt.subplots(figsize=(10, 6))
+#         ax.plot(company_data['Date'], company_data['Close'], label='Historical Close', color='blue')
+#         ax.plot(results['Date'], results['Predicted Close'], 'ro-', label='Predicted Close')
+#         
+#         if 'Actual Close' in results.columns:
+#             ax.plot(results['Date'], results['Actual Close'], 'go-', label='Actual Close')
+#         
+#         ax.axvline(x=selected_date, color='gray', linestyle='--', label='Prediction Start')
+#         ax.set_title(f'{selected_company} Stock Price Prediction')
+#         ax.set_xlabel('Date')
+#         ax.set_ylabel('Close Price')
+#         ax.legend()
+#         ax.grid(True)
+#         
+#         st.pyplot(fig)
+#     else:
+#         st.warning("No actual data available for the predicted period.")
+#         st.dataframe(results.style.format({
+#             'Date': lambda x: x.strftime('%Y-%m-%d'),
+#             'Predicted Close': '{:.2f}'
+#         }))
 
 # Display model performance
 st.subheader('Model Performance')
