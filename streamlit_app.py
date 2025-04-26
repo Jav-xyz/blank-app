@@ -60,7 +60,7 @@ def train_model(company_data, test_size=0.2):
     y_train = y.iloc[:split_idx]
     y_test = y.iloc[split_idx:]
     
-    model = RandomForestRegressor(n_estimators=100, random_state=42)
+    model = RandomForestRegressor(n_estimators=100, random_state=42, min_samples_split=5)
     model.fit(X_train, y_train)
     
     # Make predictions

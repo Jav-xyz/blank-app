@@ -13,7 +13,7 @@ from plotly.subplots import make_subplots
 # Load and preprocess data
 @st.cache_data
 def load_data():
-    df = pd.read_csv('data (1).csv')
+    df = pd.read_csv('data.csv')
     
     # Convert Date to datetime and extract features
     df['Date'] = pd.to_datetime(df['Date'])
