@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from matplotlib.dates import DateFormatter
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-
+import random
 # Load and preprocess data
 @st.cache_data
 def load_data():
@@ -134,7 +134,9 @@ def predict_future(model, df, company, prediction_date, features_used):
     pred_df = pd.DataFrame([pred_features])
     
     # Make prediction
-    predicted_price = model.predict(pred_df)[0]
+    predicted_price = model.predict(pred_df)
+    
+    predicted_price = predicted_price[0]
     
     # Get actual price if available
     actual_data = df[(df['Company'] == company) & (df['Date'] == prediction_date)]
@@ -162,6 +164,37 @@ def predict_future(model, df, company, prediction_date, features_used):
     }
     
     return status, None
+
+def generate_random_hex_color():
+    """Generates a random color in hex format."""
+    hex_color = "#"
+    for _ in range(6):
+        hex_color += random.choice("0123456789abcdef")
+    return hex_color
+def add_external_data_plot(localeRows, rows, df):
+    fig = make_subplots(specs=[[{"secondary_y": False}]])
+
+    for row in rows:
+        fig.add_trace(go.Scatter(
+            x=df['Date'],
+            y=df[localeRows[row]],
+            mode='lines',
+            name=row,
+            marker=dict(color=generate_random_hex_color(), size=8),
+            opacity=0.7
+        ))
+    # Update layout
+    fig.update_layout(
+        title="External Data",
+        xaxis_title='Data',
+        yaxis_title='Price ($)',
+        legend_title='Legend',
+        hovermode='x unified',
+        template='plotly_white',
+        height=600
+    )
+    
+    return fig
 
 def create_prediction_chart(company_df, train_idx, test_idx, y_train, y_test, 
                           train_pred, test_pred, future_dates=None, future_pred=None):
@@ -199,15 +232,16 @@ def create_prediction_chart(company_df, train_idx, test_idx, y_train, y_test,
     
     # Plot future predictions if available
     if future_dates is not None and future_pred is not None:
-        fig.add_trace(go.Scatter(
-            x=future_dates,
-            y=future_pred,
-            mode='lines+markers',
-            name='Future Predictions',
-            line=dict(color='#f39c12', width=2, dash='dot'),
-            marker=dict(size=10, symbol='diamond'),
-            opacity=0.9
-        ))
+        pass
+        # fig.add_trace(go.Scatter(
+        #     x=future_dates,
+        #     y=future_pred,
+        #     mode='lines+markers',
+        #     name='Future Predictions',
+        #     line=dict(color='#f39c12', width=2, dash='dot'),
+        #     marker=dict(size=10, symbol='diamond'),
+        #     opacity=0.9
+        # ))
     
     # Update layout
     fig.update_layout(
@@ -225,6 +259,16 @@ def create_prediction_chart(company_df, train_idx, test_idx, y_train, y_test,
 def main():
     st.set_page_config(layout="wide", page_title="WallStreetBot")
     
+    localeRows = {
+        "Reel GDP per capitas": "GDP_per_capitas",
+        "Federals Funds": "Federal_Funds",
+        "Unemployment Rates": "Unemployment_Rates",
+        "Inflation Rates": "Inflation_rate",
+        "Total Profit": "total_profit",
+        "Total Spending": "total_spending",
+        "Total Revenue": "total_revenue",
+        ## you can uncoment the following line but the data is weird
+    }
     # Custom CSS
     st.markdown("""
     <style>
@@ -298,6 +342,8 @@ def main():
         min_date = df['Date'].min().to_pydatetime()
         max_date = df['Date'].max().to_pydatetime()
         default_date = min(max_date, datetime.now() + timedelta(days=90))
+
+        external_data = st.multiselect("External Data to show", localeRows.keys())
         
         prediction_date = st.date_input(
             "Select Prediction Date",
@@ -376,7 +422,16 @@ def main():
             company_df, train_idx, test_idx, y_train, y_test,
             train_pred, test_pred, future_dates, future_predictions
         )
+
+        #External Data
+
+        data_fig = add_external_data_plot(localeRows,external_data, company_df)
+
+
         st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(data_fig, use_container_width=True)
+
+        
     
     with col2:
         st.subheader("Model Performance")
