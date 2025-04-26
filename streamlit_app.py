@@ -155,9 +155,9 @@ localeRows = {
     "Federals Funds": "Federal_Funds",
     "Unemployment Rates": "Unemployment_Rates",
     "Inflation Rates": "Inflation_rate",
-    # "Total Profit": "total_profit",
-    # "Total Spending": "total_spending",
-    # "Total Revenue": "total_revenue",
+    "Total Profit": "total_profit",
+    "Total Spending": "total_spending",
+    "Total Revenue": "total_revenue",
     ## you can uncoment the following line but the data is weird
 }
 extern_data = st.sidebar.multiselect('External Data to show', localeRows.keys())
